@@ -5,7 +5,7 @@
 #include <RF24.h>
 #include <RF24Network.h>
 #include <RF24Mesh.h>
-#include <LowPower.h>
+// #include <LowPower.h>
 
 const int sensorPin = 0;
 const int ledPin = 2;
@@ -32,27 +32,27 @@ void loop()
   mesh.update();
   float temp = readTemp();
   bool error = false;
-  String message = String("tm1=");
-  message.concat(temp);  
-  if(!mesh.write(message.c_str(), 0x01, sizeof(message))) {
-    if(!mesh.checkConnection()) {
-      Serial.println("renewing mesh address");
-      mesh.renewAddress();
-    } else {
-      Serial.println("connection lost");
-      error = true;
-    }
-  } else {
-    Serial.println("Data sent: " + message);  
-  }
+  String message = String("tm0=");
+  message.concat(temp);
+  uint16_t address = mesh.renewAddress();
+  Serial.print("renewing mesh address:");
+  Serial.println(address);
   
-  if (error) {
+  if (mesh.write(message.c_str(), 0x01, sizeof(message))) {
+    Serial.println("Data sent: " + message);
   } else {
+    Serial.println("Connection lost");
+    error = true;
+  }
+  mesh.releaseAddress();
+
+  if (!error) {
     digitalWrite(ledPin, HIGH);
-    delay(50);
+    delay(100);
   }
   digitalWrite(ledPin, LOW);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  delay(4000);
+  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
 }
 
 float readTemp()
