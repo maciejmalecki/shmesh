@@ -12,18 +12,23 @@ const int ledPin = 2;
 RF24 radio(7, 8);
 RF24Network network(radio);
 RF24Mesh mesh(radio, network);
-uint8_t nodeAddress = 1;
+uint8_t nodeAddress = 4;
 
 void setup() {
-  pinMode(ledPin, OUTPUT);
   Serial.begin(9600);
+  Serial.println("Starting Node Unit...");
+  pinMode(ledPin, OUTPUT);
   mesh.setNodeID(nodeAddress);
+  Serial.print("Node Unit configured with ");
+  Serial.print(mesh.getNodeID());
+  Serial.println(" address.");
   mesh.begin();
-  Serial.print("Node Unit initialized");
+  Serial.println("Node Unit initialized");
 }
 
 void loop()
 {
+  Serial.println("wakeup");
   mesh.update();
   float temp = readTemp();
   bool error = false;
@@ -31,14 +36,14 @@ void loop()
   message.concat(temp);  
   if(!mesh.write(message.c_str(), 0x01, sizeof(message))) {
     if(!mesh.checkConnection()) {
-      Serial.print("renewing mesh address");
+      Serial.println("renewing mesh address");
       mesh.renewAddress();
     } else {
-      Serial.print("connection lost");
+      Serial.println("connection lost");
       error = true;
     }
   } else {
-    Serial.print("Data sent: " + message);  
+    Serial.println("Data sent: " + message);  
   }
   
   if (error) {
