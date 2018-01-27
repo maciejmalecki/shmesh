@@ -5,7 +5,7 @@
 #include <RF24.h>
 #include <RF24Network.h>
 #include <RF24Mesh.h>
-// #include <LowPower.h>
+#include <LowPower.h>
 
 const int sensorPin = 0;
 const int ledPin = 2;
@@ -48,11 +48,12 @@ void loop()
 
   if (!error) {
     digitalWrite(ledPin, HIGH);
-    delay(100);
+    delay(10);
   }
   digitalWrite(ledPin, LOW);
-  delay(4000);
-  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  for (int i = 0; i < 7; ++i) {
+    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  }
 }
 
 float readTemp()
