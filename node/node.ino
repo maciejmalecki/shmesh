@@ -45,9 +45,6 @@ void setup() {
   Serial.print(mesh.getNodeID());
   Serial.println(" address.");
   mesh.begin();
-  if (tmpSensor == TMP_SENSOR_DHT11) {
-    dht.begin();
-  }
   Serial.println("Node Unit initialized");
 }
 
@@ -55,6 +52,11 @@ void loop() {
   Serial.println("wakeup");
   mesh.update();
   bool error = false;
+
+  if (tmpSensor == TMP_SENSOR_DHT11) {
+    dht.begin();
+  }
+
   readTemp();
   writeMessage();
   uint16_t address = mesh.renewAddress();
@@ -96,8 +98,10 @@ void writeMessage() {
   if (tmpSensor == TMP_SENSOR_DHT11) {
     message.append("tmp=");
     message.append(sensort.temperature);
+    sensort.temperature = 0;
     message.append(",hum=");
     message.append(sensorh.relative_humidity);
+    sensorh.relative_humidity = 0;
   } else if (tmpSensor == TMP_SENSOR_LM35) {
     message.append("tmp=");
     message.append(readout);
