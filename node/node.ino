@@ -1,6 +1,7 @@
 /*
    SmartHome Node Unit implementation
 */
+
 #include <SPI.h>
 #include <RF24.h>
 #include <RF24Network.h>
@@ -27,7 +28,7 @@ const int tmpSensor = TMP_SENSOR_DHT11;
 RF24 radio(7, 8);
 RF24Network network(radio);
 RF24Mesh mesh(radio, network);
-uint8_t nodeAddress = 5;
+uint8_t nodeAddress = 6;
 
 DHT_Unified dht(DHT11_PIN, DHT11);
 
@@ -95,15 +96,17 @@ void readTemp() {
 }
 
 void writeMessage() {
+  message.append("nodeId=");
+  message.append(nodeAddress);
   if (tmpSensor == TMP_SENSOR_DHT11) {
-    message.append("tmp=");
+    message.append(",tmp=");
     message.append(sensort.temperature);
     sensort.temperature = 0;
     message.append(",hum=");
     message.append(sensorh.relative_humidity);
     sensorh.relative_humidity = 0;
   } else if (tmpSensor == TMP_SENSOR_LM35) {
-    message.append("tmp=");
+    message.append(",tmp=");
     message.append(readout);
   }
 }
