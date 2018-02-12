@@ -3,7 +3,7 @@ sudo: false
 before_install:
   - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
 install:
-  - arduino --install-library "RF24:1.3.0,RF24Network:1.0.8,RF24Mesh:1.0.5,Adafruit Unified Sensor:1.0.2"
+  - arduino --install-library "RF24:1.3.0,RF24Network:1.0.8,RF24Mesh:1.0.5,Adafruit Unified Sensor:1.0.2,DHT sensor library:1.3.0"
   - ls ~/Arduino/libraries
   - curl -SLs https://github.com/rocketscream/Low-Power/archive/V1.6.tar.gz | tar xz --directory=/home/travis/Arduino/libraries
   - ls ~/Arduino/libraries
