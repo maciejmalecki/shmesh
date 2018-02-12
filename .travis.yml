@@ -8,7 +8,7 @@ install:
   - curl -SLs https://github.com/rocketscream/Low-Power/archive/V1.6.tar.gz | tar xz --directory=/home/travis/Arduino/libraries
   - ls ~/Arduino/libraries
 script:
-  - build_main_platforms
+  - build_platform avr
 notifications:
   email:
     on_success: change
