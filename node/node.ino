@@ -36,50 +36,64 @@ sensors_event_t sensort;
 sensors_event_t sensorh;
 float readout;
 Msg message(100);
+boolean addressReleased = true;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("Starting Node Unit...");
   pinMode(LED_PIN, OUTPUT);
   mesh.setNodeID(nodeAddress);
-  Serial.print("Node Unit configured with ");
-  Serial.print(mesh.getNodeID());
-  Serial.println(" address.");
   mesh.begin();
-  Serial.println("Node Unit initialized");
+
+  blink(nodeAddress, 15);
 }
 
 void loop() {
   Serial.println("wakeup");
   mesh.update();
-  bool error = false;
 
-  if (tmpSensor == TMP_SENSOR_DHT11) {
-    dht.begin();
+  if (addressReleased) {
+
+    if (tmpSensor == TMP_SENSOR_DHT11) {
+      dht.begin();
+    }
+
+    readTemp();
+    writeMessage();
+    uint16_t address = mesh.renewAddress();
+    Serial.print("renewing mesh address:");
+    Serial.println(address);
+
+    if (mesh.write(message.content(), 0x01, message.length())) {
+      blink(1, 10);
+    } else {
+      blink(3, 10);
+    }
+    message.clear();
   }
 
-  readTemp();
-  writeMessage();
-  uint16_t address = mesh.renewAddress();
-  Serial.print("renewing mesh address:");
-  Serial.println(address);
-
-  if (mesh.write(message.content(), 0x01, message.length())) {
-    Serial.println("Data sent.");
-  } else {
-    Serial.println("Connection lost");
-    error = true;
+  for (int i = 0; i < 5; ++i) {
+    addressReleased = mesh.releaseAddress();
+    if (addressReleased) {
+      break;
+    }
+    delay(100);
   }
-  message.clear();
-  mesh.releaseAddress();
 
-  if (!error) {
-    digitalWrite(LED_PIN, HIGH);
-    delay(10);
+  if (!addressReleased) {
+    blink(5, 20);
   }
-  digitalWrite(LED_PIN, LOW);
+
   for (int i = 0; i < 7; ++i) {
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  }
+}
+
+void blink(int times, int delayTime) {
+  for (int i = 0; i < times; ++i) {
+    digitalWrite(LED_PIN, HIGH);
+    delay(delayTime);
+    digitalWrite(LED_PIN, LOW);
+    delay(250);
   }
 }
 
