@@ -1,3 +1,4 @@
+
 /*
    SmartHome Node Unit implementation
 */
@@ -28,7 +29,7 @@ const int tmpSensor = TMP_SENSOR_DHT11;
 RF24 radio(7, 8);
 RF24Network network(radio);
 RF24Mesh mesh(radio, network);
-uint8_t nodeAddress = 6;
+uint8_t nodeAddress = 4;
 
 DHT_Unified dht(DHT11_PIN, DHT11);
 
@@ -43,6 +44,7 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   mesh.setNodeID(nodeAddress);
   mesh.begin();
+  radio.printDetails();
 
   blink(nodeAddress, 15);
 }
@@ -59,13 +61,15 @@ void loop() {
 
     readTemp();
     writeMessage();
-    uint16_t address = mesh.renewAddress();
-    Serial.print("renewing mesh address:");
-    Serial.println(address);
 
     if (mesh.write(message.content(), 0x01, message.length())) {
       blink(1, 10);
     } else {
+      if (!mesh.checkConnection()) {
+        uint16_t address = mesh.renewAddress();
+        Serial.print("renewing mesh address:");
+        Serial.println(address);
+      }
       blink(3, 10);
     }
     message.clear();
@@ -86,6 +90,7 @@ void loop() {
   for (int i = 0; i < 7; ++i) {
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
   }
+  delay(10);
 }
 
 void blink(int times, int delayTime) {
@@ -124,4 +129,3 @@ void writeMessage() {
     message.append(readout);
   }
 }
-
