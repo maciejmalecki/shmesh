@@ -53,7 +53,7 @@ void loop() {
   Serial.println("wakeup");
   mesh.update();
 
-  if (addressReleased) {
+//  if (addressReleased) {
 
     if (tmpSensor == TMP_SENSOR_DHT11) {
       dht.begin();
@@ -73,8 +73,9 @@ void loop() {
       blink(3, 10);
     }
     message.clear();
-  }
+//  }
 
+/*
   for (int i = 0; i < 5; ++i) {
     addressReleased = mesh.releaseAddress();
     if (addressReleased) {
@@ -86,6 +87,7 @@ void loop() {
   if (!addressReleased) {
     blink(5, 20);
   }
+  */
 
   for (int i = 0; i < 7; ++i) {
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);

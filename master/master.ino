@@ -13,6 +13,7 @@ RF24 radio(7, 8);
 RF24Network network(radio);
 RF24Mesh mesh(radio, network);
 uint32_t displayTimer = 0;
+bool networkDebug = false;
 
 void setup() {
   Serial.begin(9600);
@@ -37,7 +38,7 @@ void loop()
   }
 
   
-  if(millis() - displayTimer > 5000){
+  if(networkDebug && millis() - displayTimer > 5000){
     displayTimer = millis();
     Serial.println(" ");
     Serial.println(F("********Assigned Addresses********"));
