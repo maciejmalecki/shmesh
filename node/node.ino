@@ -23,13 +23,14 @@
 #define DHT11_PIN 4
 
 #define LED_PIN 2
+#define SLEEP_TIME 0
 
 const int tmpSensor = TMP_SENSOR_DHT11;
 
 RF24 radio(7, 8);
 RF24Network network(radio);
 RF24Mesh mesh(radio, network);
-uint8_t nodeAddress = 4;
+uint8_t nodeAddress = 2;
 
 DHT_Unified dht(DHT11_PIN, DHT11);
 
@@ -89,10 +90,11 @@ void loop() {
   }
   */
 
-  for (int i = 0; i < 7; ++i) {
+
+  for (int i = 0; i < SLEEP_TIME; ++i) {
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
   }
-  delay(10);
+  delay(10000);
 }
 
 void blink(int times, int delayTime) {
@@ -122,9 +124,13 @@ void writeMessage() {
   if (tmpSensor == TMP_SENSOR_DHT11) {
     message.append(",tmp=");
     message.append(sensort.temperature);
+    Serial.print("tmp=");
+    Serial.println(sensort.temperature);
     sensort.temperature = 0;
     message.append(",hum=");
     message.append(sensorh.relative_humidity);
+    Serial.print("hum=");
+    Serial.println(sensorh.relative_humidity);
     sensorh.relative_humidity = 0;
   } else if (tmpSensor == TMP_SENSOR_LM35) {
     message.append(",tmp=");
