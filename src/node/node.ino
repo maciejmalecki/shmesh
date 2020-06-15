@@ -13,7 +13,7 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
-#include "Msg.h"
+#include "../Msg.h"
 
 #define TMP_SENSOR_OFF 0
 #define TMP_SENSOR_LM35 1
